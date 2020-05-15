@@ -1,0 +1,17 @@
+
+.table {
+    width: 80%;
+    margin: 50px auto;
+}
+
+th {
+    padding: 10px;
+}
+
+td {
+    padding: 10px;
+}
+
+h1 {
+    text-align: center;
+}
