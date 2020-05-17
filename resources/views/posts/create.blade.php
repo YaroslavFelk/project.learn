@@ -8,7 +8,7 @@
 
         @include('layout.errors')
 
-        <form method="post" action="/posts">
+        <form method="post" action="{{route('post.store')}}">
 
             @csrf
 
@@ -30,6 +30,11 @@
                 <label for="long_desc">Полное описание статьи</label>
                 <textarea name="long_desc" rows="10" class="form-control"
                           id="long_desc">{{ old('long_desc') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Название статьи</label>
+                <input name="tags" type="text" class="form-control" id="tags" value="{{ old('name') }}">
             </div>
 
 

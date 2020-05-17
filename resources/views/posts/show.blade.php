@@ -6,6 +6,10 @@
             {{$post->name}}
         </h3>
 
+        @include('posts.tags', [ 'tags' => $post->tags])
+
+        <a href="{{route('post.edit', ['post' => $post])}}">Редактировать</a>
+
         <div class="blog-post">
             <p class="blog-post-meta">{{$post->created_at->toFormattedDateString()}}</p>
 
@@ -16,3 +20,5 @@
     </div><!-- /.blog-main -->
 
 @endsection
+
+

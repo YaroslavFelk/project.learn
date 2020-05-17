@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -15,7 +16,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->get();
+        $posts = Post::with('tags')->latest()->get();
 
         return view('welcome', compact('posts'));
     }
@@ -52,36 +53,49 @@ class PostController extends Controller
         return view('posts.show', compact('post'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function edit($id)
+    public function edit(Post $post)
     {
+        return view('posts.edit', compact('post'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
+    public function update(Post $post)
     {
-        //
+        $request = request()->validate(
+            [
+                'name' => 'required|between:5,100',
+                'short_desc' => 'required',
+                'long_desc' => 'required'
+            ]
+        );
+
+        $post->update($request);
+
+        $postTags = $post->tags->keyBy('tag');
+
+        $tags = collect(explode(' , ', \request('tags')))->keyBy(
+            function ($item) {
+                return $item;
+            }
+        );
+        $tagsToAttach = $tags->diffKeys($postTags);
+        $tagsToDetach = $postTags->diffKeys($tags);
+
+        foreach ($tagsToAttach as $tag) {
+            $tag = Tag::firstOrCreate(['tag' => $tag]);
+            $post->tags()->attach($tag);
+        }
+
+        foreach ($tagsToDetach as $tag) {
+            $post->tags()->detach($tag);
+        }
+
+        return redirect('/');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return Response
-     */
     public function destroy(Post $post)
     {
         $post->delete();
+
+        return redirect('/');
     }
 }
