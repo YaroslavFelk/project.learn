@@ -12,6 +12,8 @@
           crossorigin="anonymous">
     <link href="/css/app.css"
           rel="stylesheet">
+    <link href="/css/admin.css"
+          rel="stylesheet">
 </head>
 
 <body>

@@ -30,3 +30,5 @@ Route::get(
     }
 );
 
+Auth::routes();
+

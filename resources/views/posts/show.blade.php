@@ -8,8 +8,9 @@
 
         @include('posts.tags', [ 'tags' => $post->tags])
 
+        @can('update', $post)
         <a href="{{route('post.edit', ['post' => $post])}}">Редактировать</a>
-
+        @endcan
         <div class="blog-post">
             <p class="blog-post-meta">{{$post->created_at->toFormattedDateString()}}</p>
 

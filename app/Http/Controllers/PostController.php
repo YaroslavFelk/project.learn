@@ -9,6 +9,11 @@ use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => 'index']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -33,7 +38,7 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $request = $this->validate(
+        $attributes = $this->validate(
             $request,
             [
                 'slug' => 'required|alpha_dash|unique:posts',
@@ -43,7 +48,9 @@ class PostController extends Controller
             ]
         );
 
-        Post::create($request);
+        $attributes['owner_id'] = auth()->id();
+
+        Post::create($attributes);
 
         return redirect('/');
     }
@@ -55,6 +62,8 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
+        $this->authorize('update', $post);
+
         return view('posts.edit', compact('post'));
     }
 
