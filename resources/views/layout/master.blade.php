@@ -19,7 +19,9 @@
 <body>
 @include('layout.header')
 
+
 <main role="main" class="container">
+    @include('layout.success-message')
     <div class="row">
         @yield('content')
 

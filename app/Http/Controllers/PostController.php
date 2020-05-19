@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\PostDeleted;
+use App\Notifications\PostUpdated;
 use App\Post;
 use App\Tag;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -50,9 +53,10 @@ class PostController extends Controller
 
         $attributes['owner_id'] = auth()->id();
 
-        Post::create($attributes);
+        $post = Post::create($attributes);
 
-        return redirect('/');
+
+        return redirect('/')->with('message', 'Статья успешно добавлена');
     }
 
     public function show(Post $post)
@@ -98,13 +102,21 @@ class PostController extends Controller
             $post->tags()->detach($tag);
         }
 
-        return redirect('/');
+        foreach (User::admins() as $admin) {
+            $admin->notify(new PostUpdated($post));
+        }
+
+        return redirect('/')->with('message', 'Статья успешно изменена');
     }
 
     public function destroy(Post $post)
     {
         $post->delete();
 
-        return redirect('/');
+        foreach (User::admins() as $admin) {
+            $admin->notify(new PostDeleted($post));
+        }
+
+        return redirect('/')->with('message', 'Статья удалена');
     }
 }
