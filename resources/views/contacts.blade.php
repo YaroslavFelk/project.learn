@@ -61,7 +61,7 @@
 
         @include('layout.errors')
 
-        <form method="post" action="/contacts">
+        <form method="post" action="{{route('contacts.store')}}">
 
             @csrf
 

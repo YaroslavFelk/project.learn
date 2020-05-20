@@ -3,7 +3,7 @@
 
     <{{$post->short_desc}}>
 
-    @component('mail::button', ['url' => route('post.show', ['post' => $post])])
+    @component('mail::button', ['url' => route('posts.show', ['post' => $post])])
         Посмотреть статью
     @endcomponent
 

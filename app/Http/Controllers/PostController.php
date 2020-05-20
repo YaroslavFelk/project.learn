@@ -51,9 +51,21 @@ class PostController extends Controller
             ]
         );
 
+
         $attributes['owner_id'] = auth()->id();
 
         $post = Post::create($attributes);
+
+        $tags = collect(explode(' , ', \request('tags')))->keyBy(
+            function ($item) {
+                return $item;
+            }
+        );
+
+        foreach ($tags as $tag) {
+            $tag = Tag::firstOrCreate(['tag' => $tag]);
+            $post->tags()->attach($tag);
+        }
 
 
         return redirect('/')->with('message', 'Статья успешно добавлена');

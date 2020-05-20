@@ -21,15 +21,15 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
           crossorigin="anonymous">
-    <link href="/css/app.css" rel="stylesheet">
-    <link href="/css/admin.css" rel="stylesheet">
+    <link href="{{asset('/css/app.css')}}"
+          rel="stylesheet">
 
 </head>
 <body>
 <div id="app">
     <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">
+            <a class="navbar-brand" href="{{ route('posts.index') }}">
                 {{ config('app.name', 'Laravel') }}
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
