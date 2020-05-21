@@ -6,13 +6,20 @@
             {{$post->name}}
         </h3>
 
+        @include('posts.tags', [ 'tags' => $post->tags])
+
+        @can('update', $post)
+            <a href="{{route('posts.edit', ['post' => $post])}}">Редактировать</a>
+        @endcan
         <div class="blog-post">
             <p class="blog-post-meta">{{$post->created_at->toFormattedDateString()}}</p>
 
             <p>{{$post->long_desc}}</p>
         </div>
 
-        <p class="mt-5"><a href="{{url('/')}}">Вернуть на главную</a></p>
+        <p class="mt-5"><a href="{{route('posts.index')}}">Вернуть на главную</a></p>
     </div><!-- /.blog-main -->
 
 @endsection
+
+

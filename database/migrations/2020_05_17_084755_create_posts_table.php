@@ -22,7 +22,10 @@ class CreatePostsTable extends Migration
                 $table->mediumText('short_desc')->nullable();
                 $table->longText('long_desc')->nullable();
                 $table->boolean('isPublish')->default(0);
+                $table->unsignedBigInteger('owner_id');
                 $table->timestamps();
+
+                $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             }
         );
     }

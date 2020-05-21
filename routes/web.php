@@ -3,17 +3,16 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'PostController@index');
+Route::resource('posts', 'PostController');
 
-Route::get('/posts/create', 'PostController@create');
 
-Route::post('/posts', 'PostController@store');
+Route::get('/contacts', 'CallbackController@contacts')->name('contacts');
+Route::post('/contacts', 'CallbackController@store')->name('contacts.store');
 
-Route::get('/posts/{post}', 'PostController@show')->name('post.show');
+Route::get('/admin/feedbacks', 'CallbackController@index')->name('contacts.index');
 
-Route::get('/contacts', 'CallbackController@contacts');
-Route::post('/contacts', 'CallbackController@store');
+Route::get('/post/tags/{tag}', 'TagController@index')->name('post.tag');
 
-Route::get('/admin/feedbacks', 'CallbackController@index');
 
 Route::get(
     '/about',
@@ -21,4 +20,6 @@ Route::get(
         return view('about');
     }
 );
+
+Auth::routes();
 

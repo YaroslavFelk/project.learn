@@ -2,12 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\PostDeleted;
+use App\Notifications\PostUpdated;
 use App\Post;
+use App\Tag;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => 'index']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +24,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->get();
+        $posts = Post::with('tags')->latest()->get();
 
         return view('welcome', compact('posts'));
     }
@@ -32,7 +41,7 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $request = $this->validate(
+        $attributes = $this->validate(
             $request,
             [
                 'slug' => 'required|alpha_dash|unique:posts',
@@ -42,9 +51,24 @@ class PostController extends Controller
             ]
         );
 
-        Post::create($request);
 
-        return redirect('/');
+        $attributes['owner_id'] = auth()->id();
+
+        $post = Post::create($attributes);
+
+        $tags = collect(explode(' , ', \request('tags')))->keyBy(
+            function ($item) {
+                return $item;
+            }
+        );
+
+        foreach ($tags as $tag) {
+            $tag = Tag::firstOrCreate(['tag' => $tag]);
+            $post->tags()->attach($tag);
+        }
+
+
+        return redirect('/')->with('message', 'Статья успешно добавлена');
     }
 
     public function show(Post $post)
@@ -52,37 +76,59 @@ class PostController extends Controller
         return view('posts.show', compact('post'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        $this->authorize('update', $post);
+
+        return view('posts.edit', compact('post'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
+    public function update(Post $post)
     {
-        //
+        $request = request()->validate(
+            [
+                'name' => 'required|between:5,100',
+                'short_desc' => 'required',
+                'long_desc' => 'required'
+            ]
+        );
+
+        $post->update($request);
+
+        $postTags = $post->tags->keyBy('tag');
+
+        $tags = collect(explode(' , ', \request('tags')))->keyBy(
+            function ($item) {
+                return $item;
+            }
+        );
+        $tagsToAttach = $tags->diffKeys($postTags);
+        $tagsToDetach = $postTags->diffKeys($tags);
+
+        foreach ($tagsToAttach as $tag) {
+            $tag = Tag::firstOrCreate(['tag' => $tag]);
+            $post->tags()->attach($tag);
+        }
+
+        foreach ($tagsToDetach as $tag) {
+            $post->tags()->detach($tag);
+        }
+
+        foreach (User::admins() as $admin) {
+            $admin->notify(new PostUpdated($post));
+        }
+
+        return redirect('/')->with('message', 'Статья успешно изменена');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+        foreach (User::admins() as $admin) {
+            $admin->notify(new PostDeleted($post));
+        }
+
+        return redirect('/')->with('message', 'Статья удалена');
     }
 }

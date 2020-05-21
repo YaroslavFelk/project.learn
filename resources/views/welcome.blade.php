@@ -8,10 +8,9 @@
 
         @foreach($posts as $post)
             <div class="blog-post">
-                <h2 class="blog-post-title"><a href="{{route('post.show', ['post' => $post])}}">{{$post->name}}</a></h2>
-                <p class="blog-post-meta">{{$post->created_at->toFormattedDateString()}}</p>
+                @include('posts.shortPost')
 
-                <p>{{$post->short_desc}}</p>
+                @include('posts.tags', [ 'tags' => $post->tags])
             </div>
         @endforeach
     </div><!-- /.blog-main -->

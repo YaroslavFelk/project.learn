@@ -16,15 +16,50 @@
                         <line x1="21" y1="21" x2="15.8" y2="15.8"></line>
                     </svg>
                 </a>
-                <a class="btn btn-sm btn-outline-secondary" href="#">Sign up</a>
+                <!-- Right Side Of Navbar -->
+                <ul class="navbar-nav">
+                    <!-- Authentication Links -->
+                    @guest
+                        <li class="nav-item">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               href="{{ route('login') }}">{{ __('Login') }}</a>
+                        </li>
+                        @if (Route::has('register'))
+                            <li class="nav-item">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   href="{{ route('register') }}">{{ __('Register') }}</a>
+                            </li>
+                        @endif
+                    @else
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                {{ Auth::user()->name }} <span class="caret"></span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                    {{ __('Logout') }}
+                                </a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                      style="display: none;">
+                                    @csrf
+                                </form>
+                            </div>
+                        </li>
+                    @endguest
+                </ul>
             </div>
         </div>
     </header>
     <div class="nav-scroller py-1 mb-2">
         <nav class="nav d-flex justify-content-between">
-            <a class="p-2 text-muted" href="{{url('/')}}">Главная</a>
-            <a class="p-2 text-muted" href="{{url('/posts/create')}}">Создать статью</a>
-            <a class="p-2 text-muted" href="{{url('/contacts')}}">Контакты</a>
+            <a class="p-2 text-muted" href="{{route('posts.index')}}">Главная</a>
+            <a class="p-2 text-muted" href="{{route('posts.create')}}">Создать статью</a>
+            <a class="p-2 text-muted" href="{{route('contacts')}}">Контакты</a>
             <a class="p-2 text-muted" href="{{url('/about')}}">О нас</a>
             <a class="p-2 text-muted" href="{{url('/admin/feedbacks')}}"> Админ. раздел</a>
         </nav>
